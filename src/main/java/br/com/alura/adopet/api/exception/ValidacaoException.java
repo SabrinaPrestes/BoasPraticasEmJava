@@ -6,7 +6,4 @@ public class ValidacaoException extends RuntimeException {
         super(message);
     }
 
-    public static void main(String[] args) {
-
-    }
 }
