@@ -4,6 +4,7 @@ import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.AbrigoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,27 @@ public class AbrigoService {
     }
 
 
-    public void cadastrarPet(){
+    public void cadastrarPet(String idOuNome, Pet pet) {
+        try {
+            Long id = Long.parseLong(idOuNome);
+            Abrigo abrigo = repository.findById(id)
+                    .orElseThrow(() -> new ValidacaoException("Abrigo não encontrado!"));
+            pet.setAbrigo(abrigo);
+            pet.setAdotado(false);
+            abrigo.getPets().add(pet);
+            repository.save(abrigo);
+        } catch (NumberFormatException e) {
+            Abrigo abrigo = repository.findByNome(idOuNome);
+            if (abrigo == null) {
+                throw new ValidacaoException("Abrigo não encontrado!");
+            }
 
+            pet.setAbrigo(abrigo);
+            pet.setAdotado(false);
+            abrigo.getPets().add(pet);
+
+            repository.save(abrigo);
+        }
     }
+
 }
